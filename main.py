@@ -21,17 +21,13 @@ INVALID_NUMBER_ERROR = " Your number was not formatted properly, please try agai
 
 # utility functions
 
-# these next two functions are ripped straight off from stack overflow and editted
-
 def round_to_sig_figs(num: float, num_of_sf : int):
     if abs(num) < 999 and abs(num) > 0.001: 
         txt = np.format_float_positional(num, precision=num_of_sf, unique=False, fractional=False, trim='k')
-        if txt[-1] == ".": txt = txt[:-1] # sometimes ends in . for no reason
+        if txt[-1] == ".": txt = txt[:-1] # sometimes ends in .
         return txt
     else:
-        # huh? these two ifs resolve to the same thing but without it, it doesn't work for negatives?
-        # probably some branch prediction nonsense
-        # im not gonna question it: if it ain't broke, don't fix it.
+        # this is questionable...
         if num >= 0: return f"{Decimal(num):.{max(0, num_of_sf-1)}E}".replace("+", "")
         if num < 0: return f"{Decimal(num):.{max(0, num_of_sf-1)}E}".replace("+", "")
 
@@ -126,6 +122,8 @@ def parse(s: str) -> str:
 
         operators = {"*": multiplication, "/": division, "+": addition, "-": subtraction}
         rawOperatorSet = set("*/+-")
+        
+        # akin to implementing a stack datastucture
         for operator in rawOperatorSet:
             while operator in expression:
                 subCount = expression.count("-")
